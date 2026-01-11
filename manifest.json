@@ -1,0 +1,28 @@
+{
+  "name": "Mental Health Journal",
+  "short_name": "Mood Journal",
+  "description": "Private, offline-first mood tracking and journaling app",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "permissions": [
+    "notifications"
+  ],
+  "categories": ["health", "lifestyle", "productivity"]
+}

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mental Health Journal - Track your mood and feelings privately">
+    <title>Mental Health Journal</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <h1>Mental Health Journal</h1>
+            <div class="header-actions">
+                <button id="panicBtn" class="btn-icon panic-btn" title="Emergency Help">🚨</button>
+                <button id="historyBtn" class="btn-icon" title="View History">
+                    <span>📊</span>
+                </button>
+                <button id="settingsBtn" class="btn-icon" title="Settings">
+                    <span>⚙️</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Mood Indicator -->
+            <div class="mood-section">
+                <div class="mood-emoji" id="moodEmoji">😊</div>
+                <div class="mood-label" id="moodLabel">Neutral</div>
+            </div>
+
+            <!-- Quick Check-in Section -->
+            <div class="quick-checkin-section">
+                <h3>Quick Check-in</h3>
+                <p class="checkin-subtitle">Track your mood and stress throughout the day</p>
+                <div class="checkin-controls">
+                    <div class="checkin-mood">
+                        <label>Current Mood:</label>
+                        <div class="quick-mood-selector-small">
+                            <button class="mood-btn-small" data-mood="very-happy" title="Very Happy">😄</button>
+                            <button class="mood-btn-small" data-mood="happy" title="Happy">😊</button>
+                            <button class="mood-btn-small" data-mood="neutral" title="Neutral">😐</button>
+                            <button class="mood-btn-small" data-mood="sad" title="Sad">😔</button>
+                            <button class="mood-btn-small" data-mood="very-sad" title="Very Sad">😢</button>
+                        </div>
+                    </div>
+                    <div class="checkin-stress">
+                        <label>Stress Level:</label>
+                        <div class="stress-slider-container">
+                            <input type="range" id="stressSlider" min="0" max="100" value="0" class="stress-slider">
+                            <div class="stress-slider-labels">
+                                <span>Low</span>
+                                <span id="stressSliderValue">0%</span>
+                                <span>High</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="quickCheckinBtn" class="btn-secondary">Save Quick Check-in</button>
+                </div>
+            </div>
+
+            <!-- Today's Timeline -->
+            <div class="timeline-section" id="timelineSection">
+                <h3>Today's Timeline</h3>
+                <div id="timelineContainer" class="timeline-container"></div>
+            </div>
+
+            <!-- Stress Gauge -->
+            <div class="stress-gauge-section">
+                <h3>Stress Level</h3>
+                <div class="gauge-container">
+                    <canvas id="stressGauge"></canvas>
+                </div>
+                <div class="stress-value" id="stressValue">0%</div>
+            </div>
+
+            <!-- Journal Entry Form -->
+            <div class="journal-section">
+                <h3>How are you feeling today?</h3>
+                <div class="entry-input-container">
+                    <textarea id="journalEntry" placeholder="Write about your day, thoughts, or feelings..."
+                        rows="6"></textarea>
+                    <div class="input-actions">
+                        <button id="voiceRecordBtn" class="btn-voice" title="Voice Input">
+                            <span id="voiceIcon">🎤</span>
+                            <span id="voiceStatus"></span>
+                        </button>
+                        <button id="voicePlayBtn" class="btn-voice" title="Read Aloud">
+                            🔊
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Mood Selection -->
+                <div class="quick-mood-selector">
+                    <button class="mood-btn" data-mood="very-happy">😄</button>
+                    <button class="mood-btn" data-mood="happy">😊</button>
+                    <button class="mood-btn" data-mood="neutral">😐</button>
+                    <button class="mood-btn" data-mood="sad">😔</button>
+                    <button class="mood-btn" data-mood="very-sad">😢</button>
+                </div>
+
+                <button id="saveEntryBtn" class="btn-primary">Save Entry</button>
+            </div>
+
+            <!-- Advice Section -->
+            <div class="advice-section">
+                <h3>💬 Get Advice</h3>
+                <p class="advice-subtitle">Ask for supportive guidance on your mental health journey</p>
+                <div class="advice-container">
+                    <textarea id="adviceQuestion" placeholder="Ask a question or share a concern... (e.g., 'How can I manage anxiety?' or 'I feel overwhelmed, what should I do?')" rows="4"></textarea>
+                    <button id="getAdviceBtn" class="btn-primary">Get Advice</button>
+                    <div id="adviceResult" class="advice-result"></div>
+                </div>
+            </div>
+
+            <!-- Recent Entries Preview -->
+            <div class="recent-entries" id="recentEntries">
+                <h3>Recent Entries</h3>
+                <div id="entriesList"></div>
+            </div>
+        </main>
+
+        <!-- History Modal -->
+        <div id="historyModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Mood History</h2>
+                    <button class="modal-close" id="closeHistoryModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="chart-controls">
+                        <button class="chart-btn active" data-period="week">Week</button>
+                        <button class="chart-btn" data-period="month">Month</button>
+                    </div>
+                    <canvas id="moodChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panic/Emergency Modal -->
+        <div id="panicModal" class="modal emergency-modal">
+            <div class="modal-content emergency-content">
+                <div class="modal-header emergency-header">
+                    <h2>🚨 Emergency Support</h2>
+                    <button class="modal-close" id="closePanicModal">&times;</button>
+                </div>
+                <div class="modal-body emergency-body">
+                    <div class="emergency-message">
+                        <p><strong>You are not alone. Help is available.</strong></p>
+                        <p>If you're in immediate danger, please call emergency services right away.</p>
+                    </div>
+                    
+                    <div class="emergency-resources">
+                        <h3>Emergency Contacts</h3>
+                        <div class="emergency-item">
+                            <strong>National Suicide Prevention Lifeline</strong>
+                            <a href="tel:988" class="emergency-link">📞 Call 988</a>
+                            <span class="emergency-desc">Available 24/7, free and confidential</span>
+                        </div>
+                        <div class="emergency-item">
+                            <strong>Crisis Text Line</strong>
+                            <a href="sms:741741&body=HOME" class="emergency-link">💬 Text HOME to 741741</a>
+                            <span class="emergency-desc">Free 24/7 crisis support via text</span>
+                        </div>
+                        <div class="emergency-item">
+                            <strong>Emergency Services</strong>
+                            <a href="tel:911" class="emergency-link emergency-911">📞 Call 911</a>
+                            <span class="emergency-desc">For immediate life-threatening situations</span>
+                        </div>
+                    </div>
+
+                    <div class="emergency-coping">
+                        <h3>Immediate Coping Strategies</h3>
+                        <ul class="coping-list">
+                            <li>Take deep, slow breaths (4-7-8 breathing)</li>
+                            <li>Ground yourself: Name 5 things you can see, 4 you can touch, 3 you can hear</li>
+                            <li>Reach out to a trusted friend or family member</li>
+                            <li>Go to a safe, quiet space if possible</li>
+                            <li>Remember: This feeling will pass</li>
+                        </ul>
+                    </div>
+
+                    <div class="emergency-actions">
+                        <button id="closeEmergencyBtn" class="btn-secondary">I'm Safe Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div id="settingsModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Settings</h2>
+                    <button class="modal-close" id="closeSettingsModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="enableNotifications">
+                            Enable Notifications
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            Reminder Time:
+                            <input type="time" id="reminderTime">
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <button id="exportDataBtn" class="btn-secondary">Export Data (JSON)</button>
+                    </div>
+                    <div class="setting-item">
+                        <button id="clearDataBtn" class="btn-danger">Clear All Data</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OneSignal SDK -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    
+    <script src="db.js"></script>
+    <script src="gemini-nano.js"></script>
+    <script src="sentiment.js"></script>
+    <script src="chart.js"></script>
+    <script src="speech.js"></script>
+    <script src="onesignal-init.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
